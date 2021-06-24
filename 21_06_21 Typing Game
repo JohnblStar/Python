@@ -1,7 +1,7 @@
 import time
 import random
-HARD = {'상상더하기': '''
-1, 2 Come On, R U Ready
+import datetime
+HARD = {'상상더하기': '''1, 2 Come On, R U Ready
 3, 4 Do It I'm Ready
 5, 6 Baby Are You Ready
 지금 나와 어디든 가자
@@ -70,8 +70,7 @@ Oh 발견했어 우리 들만의 Paradise
 3, 4 Do It I'm Ready
 5, 6 Baby Are You Ready
 ''',
-        '롤린': '''
-그 날을 잊지 못해 babe
+        '롤린': '''그 날을 잊지 못해 babe
 날 보며 환히 웃던 너의 미소에
 홀린 듯 I'm fall in love
 But 너무 쪽팔림에 (난 그저)
@@ -129,8 +128,7 @@ Rollin' Rollin' Rollin' Rollin'
 기다리고 있잖아 Babe Just only you
         '''
 }
-MID = {'가족사진':'''
-바쁘게 살아온 당신의 젊음에
+MID = {'가족사진':'''바쁘게 살아온 당신의 젊음에
 의미를 더해줄 아이가 생기고
 그날에 찍었던 가족 사진속에
 설레는 웃음은 빛바래 가지만
@@ -147,8 +145,7 @@ MID = {'가족사진':'''
 그을린 그 시간들을 내가 깨끗히 모아서
 당신의 웃음 꽃 피우길
     ''',
-       '가시': '''
-너 없는 지금도 눈부신 하늘과
+       '가시': '''너 없는 지금도 눈부신 하늘과
 눈부시게 웃는 사람들
 나의 헤어짐을 모르는 세상은
 슬프도록 그대로인데
@@ -176,8 +173,7 @@ MID = {'가족사진':'''
 애써도 나를 괴롭히는데
 '''
 }
-LOW = {'라라라': '''
-그대는 참 아름다워요 밤 하늘의 별빛보다 빛나요
+LOW = {'라라라': '''그대는 참 아름다워요 밤 하늘의 별빛보다 빛나요
 지친 나의 마음을 따뜻하게 감싸줄
 그대 품이 나의 집이죠
 세찬 바람 앞에서 꺼질듯한 내 사랑도
@@ -206,8 +202,7 @@ LOW = {'라라라': '''
 사랑노래 함께 불러요 둘이서 라라라
 그대 품이 나의 집이죠 영원히 라라라
 ''',
-       '살다가':'''
-살아도 사는게 아니래
+       '살다가':'''살아도 사는게 아니래
 너 없는 하늘에 창 없는 감옥같아서
 웃어도 웃는게 아니래
 초라해 보이고 우는것 같아 보인대
@@ -259,7 +254,9 @@ class Tajagame:
         카운트다운 실행
         가사를 하나씩 띄우기
         '''
-
+        time_log = []
+        tasok_log = []
+        acc_log = []
         if self.lev == 'high':
             candidate = HARD
         elif self.lev == 'middle':
@@ -268,7 +265,39 @@ class Tajagame:
             candidate = LOW
         # random.choice(list(candidate.values()))
         question = random.choice(list(candidate.items()))
-        print(question)
+        # print(f'제목 : {question[0]} \n가사 : {question[1]}')
+
+        lyrics = question[1]
+        lyrics = lyrics.split("\n")
+
+        for lc in lyrics:
+
+            start= datetime.datetime.now() #시작 시간
+            print('가사:',lc) #가사 표시
+            inp = input('작성: ') #타자작성 시 받아오는 값
+            elapsed = datetime.datetime.now() - start #종료시간
+            time_log.append(elapsed.total_seconds())
+
+            if inp == lc:
+                print('잘 진행 중')
+            else:
+                cnt = 0
+                print('오타다!!')
+                for li1, li2 in zip(lc, inp):
+                    if li1 == li2: cnt+=1
+                aim = cnt / len(lc)  # 정확도 체크
+                acc_log.append(aim)
+                print(cnt, aim*100)
+            tasok = len(inp)/elapsed.total_seconds()*60
+            tasok_log.append(tasok)
+            # speed = tasu / elapsed.total_seconds()
+            print(tasok)
+        AVG_acc = sum(acc_log)/len(acc_log)
+        AVG_tasok =sum(tasok_log)/len(tasok_log)
+        AVG_time =sum(time_log)/len(time_log)
+        print(AVG_acc)
+        print(AVG_tasok)
+        print(AVG_time)
 
         # print('선택 난이도에 high, middle, low 중 하나를 입력하세요')
     def level(self):
@@ -281,14 +310,12 @@ class Tajagame:
         elif lev == 'middle': print('현재 난이도는 *middle*')
         self.lev = lev
 
-
     def count(self):
         print('시작합니다!!')
-        sec = 5
+        sec = 2
         while sec != 1:
             sec -= 1
-            time.sleep(1)
             print(sec)
-
+            time.sleep(1)
 
 game = Tajagame()
